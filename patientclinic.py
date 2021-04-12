@@ -6,6 +6,7 @@ import geopy
 dotenv.load_dotenv()
 g = geopy.geocoders.GoogleV3(api_key=os.environ['GOOGLE_KEY'])
 
+# patient geocode data
 with open('./data/patients.csv', 'r') as f:
     patient_data = list((f.read().split('\n')))
 
@@ -26,15 +27,21 @@ for line in patient_data:
         address = address.split(remove)[0]
     z = ' '.join([address, postal_code, FSA, city, province])
 
-    #TODO geocode fail
+    #TODO geocode fail, check return
     location = g.geocode(z)
-    geocode = {location.latitude, location.longitude}
+    geocode = (location.latitude, location.longitude)
     patient[ID] = geocode
     # 50 QPS limit
     q_cnt += 1
     if q_cnt % 50 == 0:
         time.sleep(1)
 
+with open('./patient_geocode') as f:
+    f.write('PATIENT ID, LATITUDE LONGITUDE')
+    for k in patient:
+        f.write('{0}, {1} {2}'.format(k, patient[k][0], patient[k][1]))
+
+# clinic geocode data
 with open('./data/clinics.csv', 'r') as f:
     clinic_data = list(f.read().split('\n'))
 
@@ -54,12 +61,16 @@ for line in clinic_data:
         address = address.split(remove)[0]
     z = ' '.join([address, postal_code, FSA, city, province])
 
-    #TODO geocode fail
+    #TODO geocode fail, check return
     location = g.geocode(z)
-    geocode = {location.latitude, location.longitude}
+    geocode = (location.latitude, location.longitude)
     clinic[ID] = geocode
     # 50 QPS limit
     q_cnt += 1
     if q_cnt % 50 == 0:
         time.sleep(1)
 
+with open('./clinic_geocode') as f:
+    f.write('CLINIC ID, LATITUDE LONGITUDE')
+    for k in clinic:
+        f.write('{0}, {1} {2}'.format(k, clinic[k][0], clinic[k][1]))
