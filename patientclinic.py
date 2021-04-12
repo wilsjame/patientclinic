@@ -1,4 +1,5 @@
 import os
+import time
 import dotenv
 import geopy
 
@@ -9,6 +10,7 @@ with open('./data/patients.csv', 'r') as f:
     patient_data = list((f.read().split('\n')))
 
 patient = {}
+q_cnt = 0
 for line in patient_data:
     a = list(line.split(','))
     if a[0] == 'ID' or a[0] == '':
@@ -28,6 +30,10 @@ for line in patient_data:
     location = g.geocode(z)
     geocode = {location.latitude, location.longitude}
     patient[ID] = geocode
+    # 50 QPS limit
+    q_cnt += 1
+    if q_cnt % 50 == 0:
+        time.sleep(1)
 
 with open('./data/clinics.csv', 'r') as f:
     clinic_data = list(f.read().split('\n'))
@@ -52,4 +58,8 @@ for line in clinic_data:
     location = g.geocode(z)
     geocode = {location.latitude, location.longitude}
     clinic[ID] = geocode
+    # 50 QPS limit
+    q_cnt += 1
+    if q_cnt % 50 == 0:
+        time.sleep(1)
 
