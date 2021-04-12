@@ -16,12 +16,13 @@
 - based off travel/commute distance (and not the straight line distance)
 
 # analysis 
-startup, update: *O(1+2+3)*
+_P_ number of patients and _C_ number of clinics
 
-- (1) **O((2 * rows)(geocode query + update))**
-- (2) **O((2 * rows)(travel commute distance compute + update))**
+startup, update: _O(1+2+3)_ = _O((PC)<sup>2</sup>(P+C))_ = _O(P<sup>3</sup>C<sup>2</sup> + C<sup>3</sup>P<sup>2</sup>)_ = _O(P<sup>3</sup> + C<sup>3</sup>)_
+
+- (1) **O((_P_ + _C_)(geocode query))**
+- (2) **O((_PC_)(distance query))**
 - (3) **O(match nearest clinic for each patient)**
- - brute force: **O(rows <sup>2</sup> * distance query)**
+  - brute force: **O(_PC_)(distance lookup)**
 
-query: *O(const)*
-
+match lookup: _O(const)_
