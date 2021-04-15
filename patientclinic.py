@@ -12,6 +12,7 @@ with open('./data/patients.csv', 'r') as f:
 
 patient = {}
 q_cnt = 0
+print('-> begin patient data')
 for line in patient_data:
     a = list(line.split(','))
     if a[0] == 'ID' or a[0] == '':
@@ -28,24 +29,29 @@ for line in patient_data:
     z = ' '.join([address, postal_code, FSA, city, province])
 
     #TODO geocode fail, check return
+    print('here', q_cnt, sep = ': ')
     location = g.geocode(z)
+    print(location)
     geocode = (location.latitude, location.longitude)
+    print(geocode)
     patient[ID] = geocode
     # 50 QPS limit
     q_cnt += 1
     if q_cnt % 50 == 0:
         time.sleep(1)
 
-with open('./patient_geocode') as f:
-    f.write('PATIENT ID, LATITUDE LONGITUDE')
+print('-> begin write patient data')
+with open('./patient_geocode', 'w') as f:
+    f.write('PATIENT ID, LATITUDE LONGITUDE\n')
     for k in patient:
-        f.write('{0}, {1} {2}'.format(k, patient[k][0], patient[k][1]))
+        f.write('{0}, {1} {2}\n'.format(k, patient[k][0], patient[k][1]))
 
 # clinic geocode data
 with open('./data/clinics.csv', 'r') as f:
     clinic_data = list(f.read().split('\n'))
 
 clinic = {}
+print('-> begin clinic data')
 for line in clinic_data:
     a = list(line.split(','))
     if a[0] == 'Clinic ID' or a[0] == '':
@@ -62,15 +68,19 @@ for line in clinic_data:
     z = ' '.join([address, postal_code, FSA, city, province])
 
     #TODO geocode fail, check return
+    print('here', q_cnt, sep = ': ')
     location = g.geocode(z)
+    print(location)
     geocode = (location.latitude, location.longitude)
+    print(geocode)
     clinic[ID] = geocode
     # 50 QPS limit
     q_cnt += 1
     if q_cnt % 50 == 0:
         time.sleep(1)
 
-with open('./clinic_geocode') as f:
-    f.write('CLINIC ID, LATITUDE LONGITUDE')
+print('-> begin write clinic data')
+with open('./clinic_geocode', 'w') as f:
+    f.write('CLINIC ID, LATITUDE LONGITUDE\n')
     for k in clinic:
-        f.write('{0}, {1} {2}'.format(k, clinic[k][0], clinic[k][1]))
+        f.write('{0}, {1} {2}\n'.format(k, clinic[k][0], clinic[k][1]))
